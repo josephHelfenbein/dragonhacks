@@ -36,7 +36,7 @@ export default function Sidebar({ expanded, onToggle }: SidebarProps) {
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
               {/* Replace text with Image component */}
               <Image 
-                src="/images/focura.png" // Make sure this path is correct relative to the public folder
+                src="/images/focura-icon.png" // Make sure this path is correct relative to the public folder
                 alt="Focura Logo" 
                 width={50} // Increased width from 32
                 height={50} // Increased height from 32

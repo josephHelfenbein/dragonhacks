@@ -17,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Focura",
   description: "A study companion that monitors your posture, phone usage, and helps you stay productive",
+  icons: {
+    icon: '/public/images/focura-icon.png',
+  },
 };
 
 export default function RootLayout({
