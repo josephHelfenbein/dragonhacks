@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/pusher-js": "^5.1.0",
     "framer-motion": "^12.9.2",
     "next": "15.3.1",
     "nextjs": "file:",
+    "pusher-js": "^8.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "vercel": "^41.6.2"
