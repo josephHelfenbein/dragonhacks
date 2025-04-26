@@ -74,7 +74,7 @@ export default function Sidebar({ expanded, onToggle }: SidebarProps) {
                     } ${expanded ? 'justify-start' : 'justify-center'}`}
                     title={expanded ? '' : item.label} // Tooltip when collapsed
                   >
-                    <Icon className={`h-5 w-5 transition-colors duration-150 ease-in-out ${isActive ? 'text-[var(--accent)]' : 'text-[var(--sidebar-foreground)] group-hover:text-[var(--sidebar-foreground)]'}`} />
+                    <Icon />
                     {expanded && <span className="ml-3">{item.label}</span>}
                   </Link>
                 </li>
@@ -92,9 +92,9 @@ export default function Sidebar({ expanded, onToggle }: SidebarProps) {
           title={expanded ? '' : (theme === 'light' ? 'Switch to Night Owl Mode' : 'Switch to Focus Mode')} // Tooltip when collapsed
         >
           {theme === 'light' ? (
-            <MoonIcon className="h-5 w-5 text-[var(--sidebar-foreground)] group-hover:text-[var(--sidebar-foreground)]" />
+            <MoonIcon />
           ) : (
-            <SunIcon className="h-5 w-5 text-[var(--sidebar-foreground)] group-hover:text-[var(--sidebar-foreground)]" />
+            <SunIcon />
           )}
           {expanded && <span className="ml-3">{theme === 'light' ? 'Night Owl Mode' : 'Focus Mode'}</span>}
         </button>
