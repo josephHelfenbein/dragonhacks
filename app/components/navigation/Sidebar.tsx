@@ -1,73 +1,91 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
-import { useTheme } from "@/app/providers/ThemeProvider";
-import { HomeIcon, PoseIcon, TimerIcon, StatsIcon, MoonIcon, SunIcon } from "@/app/components/ui/Icons";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useTheme } from '@/app/providers/ThemeProvider';
+import { HomeIcon, PoseIcon, TimerIcon, StatsIcon, MoonIcon, SunIcon, ChevronLeftIcon, ChevronRightIcon } from '@/app/components/ui/Icons'; // Assuming Chevron icons exist
 
-export default function Sidebar() {
-  const [expanded, setExpanded] = useState(true);
+// Define navigation items
+const navItems = [
+  { href: '/', label: 'Dashboard', icon: HomeIcon },
+  { href: '/posture', label: 'Posture Tracking', icon: PoseIcon },
+  { href: '/timer', label: 'Focus Timer', icon: TimerIcon },
+  { href: '/stats', label: 'Statistics', icon: StatsIcon },
+];
+
+// Define props interface
+interface SidebarProps {
+  expanded: boolean;
+  onToggle: () => void;
+}
+
+// Use props instead of internal state
+export default function Sidebar({ expanded, onToggle }: SidebarProps) {
   const { theme, toggleTheme } = useTheme();
-  
+  const pathname = usePathname();
+
   return (
-    <div className={`bg-[var(--sidebar-bg)] h-screen transition-width duration-300 ${expanded ? 'w-64' : 'w-20'} fixed left-0 top-0 flex flex-col justify-between`}>
+    <div className={`bg-[var(--sidebar-bg)] text-[var(--sidebar-foreground)] h-screen transition-all duration-300 ease-in-out ${expanded ? 'w-64' : 'w-20'} fixed left-0 top-0 flex flex-col justify-between shadow-lg z-10`}>
       <div>
-        <div className="p-4 flex items-center justify-between">
+        {/* Header with Logo and Toggle Button */}
+        <div className="p-4 flex items-center justify-between border-b border-[var(--border-color)] border-opacity-20">
+          {/* Logo visible only when expanded */}
           {expanded && (
-            <div className="flex items-center">
-              <span className="text-[var(--accent)] font-bold text-xl">StudyBuddy</span>
-            </div>
+            <Link href="/" className="flex items-center gap-2">
+              {/* <img src="/logo.svg" alt="Focura Logo" className="h-8 w-auto" /> Replace with your logo */}
+              <span className="text-[var(--accent)] font-bold text-xl">Focura</span>
+            </Link>
           )}
+          {/* Expand/Collapse Button */}
           <button 
-            onClick={() => setExpanded(!expanded)} 
-            className="p-2 rounded-full hover:bg-[var(--secondary)]"
+            onClick={onToggle} 
+            className="p-2 rounded-full text-[var(--sidebar-foreground)] hover:bg-black/10 dark:hover:bg-white/10 transition-colors" // Adjusted hover background
+            aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+            title={expanded ? "Collapse sidebar" : "Expand sidebar"} // Add tooltip
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              {expanded ? (
-                <path d="M15 18l-6-6 6-6" />
-              ) : (
-                <path d="M9 18l6-6-6-6" />
-              )}
-            </svg>
+            {expanded ? <ChevronLeftIcon className="h-5 w-5" /> : <ChevronRightIcon className="h-5 w-5" />}
           </button>
         </div>
 
-        <nav className="mt-8">
-          <ul className="space-y-2 px-2">
-            <li>
-              <Link href="/" className={`flex items-center p-3 rounded-lg hover:bg-[var(--primary)] transition-colors ${expanded ? 'px-4' : 'justify-center'}`}>
-                <HomeIcon />
-                {expanded && <span className="ml-3">Dashboard</span>}
-              </Link>
-            </li>
-            <li>
-              <Link href="/posture" className={`flex items-center p-3 rounded-lg hover:bg-[var(--primary)] transition-colors ${expanded ? 'px-4' : 'justify-center'}`}>
-                <PoseIcon />
-                {expanded && <span className="ml-3">Posture Tracking</span>}
-              </Link>
-            </li>
-            <li>
-              <Link href="/timer" className={`flex items-center p-3 rounded-lg hover:bg-[var(--primary)] transition-colors ${expanded ? 'px-4' : 'justify-center'}`}>
-                <TimerIcon />
-                {expanded && <span className="ml-3">Focus Timer</span>}
-              </Link>
-            </li>
-            <li>
-              <Link href="/stats" className={`flex items-center p-3 rounded-lg hover:bg-[var(--primary)] transition-colors ${expanded ? 'px-4' : 'justify-center'}`}>
-                <StatsIcon />
-                {expanded && <span className="ml-3">Statistics</span>}
-              </Link>
-            </li>
+        {/* Navigation */}
+        <nav className="mt-6">
+          <ul className="space-y-1 px-2">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              const Icon = item.icon;
+              return (
+                <li key={item.label}>
+                  <Link
+                    href={item.href}
+                    className={`flex items-center p-3 rounded-lg transition-colors duration-150 ease-in-out group ${
+                      isActive 
+                        ? 'bg-[var(--primary)] text-[var(--accent)] font-semibold' 
+                        : 'hover:bg-black/10 dark:hover:bg-white/10 hover:text-[var(--sidebar-foreground)]' // Adjusted hover background
+                    } ${expanded ? 'justify-start' : 'justify-center'}`}
+                    title={expanded ? '' : item.label} // Tooltip when collapsed
+                  >
+                    <Icon className={`h-5 w-5 transition-colors duration-150 ease-in-out ${isActive ? 'text-[var(--accent)]' : 'text-[var(--sidebar-foreground)] group-hover:text-[var(--sidebar-foreground)]'}`} />
+                    {expanded && <span className="ml-3">{item.label}</span>}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       </div>
 
-      <div className="p-4 mb-4">
+      {/* Footer with Theme Toggle */}
+      <div className="border-t border-[var(--border-color)] border-opacity-20 p-2">
         <button 
           onClick={toggleTheme} 
-          className={`flex items-center p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors w-full ${expanded ? 'justify-start' : 'justify-center'}`}
+          className={`flex items-center p-3 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 transition-colors w-full group ${expanded ? 'justify-start' : 'justify-center'}`} // Adjusted hover background
+          title={expanded ? '' : (theme === 'light' ? 'Switch to Night Owl Mode' : 'Switch to Focus Mode')} // Tooltip when collapsed
         >
-          {theme === 'light' ? <MoonIcon /> : <SunIcon />}
+          {theme === 'light' ? (
+            <MoonIcon className="h-5 w-5 text-[var(--sidebar-foreground)] group-hover:text-[var(--sidebar-foreground)]" />
+          ) : (
+            <SunIcon className="h-5 w-5 text-[var(--sidebar-foreground)] group-hover:text-[var(--sidebar-foreground)]" />
+          )}
           {expanded && <span className="ml-3">{theme === 'light' ? 'Night Owl Mode' : 'Focus Mode'}</span>}
         </button>
       </div>

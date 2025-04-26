@@ -1,16 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  /* Light Theme */
+  /* Light Theme - Study Focused */
   --background: #FFFFFF;
-  --foreground: #171717;
-  --primary: #87CEFA;  /* Soft sky blue */
-  --secondary: #E6E6FA; /* Light lavender */
-  --accent: #8A2BE2; /* Electric violet */
-  --mint: #98FF98; /* Mint green */
-  --coral: #FF7F50; /* Coral orange */
-  --sidebar-bg: #f5f5f5;
-  --card-bg: #f9f9f9;
+  --foreground: #212529; /* Darker gray for text */
+  --primary: #D6EAF8;  /* Very light blue, like paper */
+  --secondary: #E9ECEF; /* Light gray */
+  --accent: #34495E; /* Dark grayish blue, like ink */
+  --mint: #A9DFBF; /* Softer mint */
+  --coral: #F5B7B1; /* Softer coral */
+  --sidebar-bg: #f8f9fa; /* Slightly off-white */
+  --sidebar-foreground: #495057; /* Dark gray for sidebar text */
+  --card-bg: #ffffff;
+  --border-color: #dee2e6; /* Lighter border */
 }
 
 @theme inline {
@@ -22,15 +24,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #121E36; /* Deep navy */
-    --foreground: #ededed;
-    --primary: #5ba3d0;
-    --secondary: #2f2d46;
-    --accent: #a673e7;
-    --mint: #70cc70;
-    --coral: #e06a40;
-    --sidebar-bg: #1a2942;
-    --card-bg: #1d304f;
+    /* Dark Theme - Study Focused */
+    --background: #17202A; /* Darker blue */
+    --foreground: #EAECEE; /* Light gray text */
+    --primary: #2C3E50; /* Dark slate blue for active item */
+    --secondary: #34495E; /* Slightly lighter dark slate blue */
+    --accent: #EAECEE; /* Light gray/white for active text */
+    --mint: #58D68D; /* Brighter mint */
+    --coral: #EC7063; /* Brighter coral */
+    --sidebar-bg: #1C2833; /* Very dark blue */
+    --sidebar-foreground: #D5D8DC; /* Light grayish blue for sidebar text */
+    --card-bg: #212F3D; /* Darker card background */
+    --border-color: #34495E; /* Darker border */
   }
 }
 
@@ -40,46 +45,64 @@ body {
   font-family: var(--font-sans, Arial, Helvetica, sans-serif);
   margin: 0;
   padding: 0;
+  transition: background 0.3s ease, color 0.3s ease; /* Smooth theme transition */
 }
 
 .btn-primary {
   background-color: var(--primary);
   color: var(--foreground);
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: 0.5rem; /* Softer corners */
+  padding: 0.6rem 1.2rem; /* Slightly larger padding */
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease-out; /* Faster transition */
+  border: 1px solid transparent; /* Prepare for potential border on hover/focus */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .btn-primary:hover {
   background-color: var(--accent);
-  color: white;
+  color: #fff; /* Ensure contrast on accent bg */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .btn-accent {
   background-color: var(--accent);
-  color: white;
-  padding: 0.5rem 1rem;
+  color: #fff; /* Ensure contrast */
   border-radius: 0.5rem;
+  padding: 0.6rem 1.2rem;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease-out;
+  border: 1px solid transparent;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .btn-accent:hover {
   opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card {
-  background: var(--card-bg);
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color); /* Add subtle border */
+  border-radius: 12px; /* Slightly larger radius */
   padding: 1.5rem;
-  margin-bottom: 1rem;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; /* Smooth transitions */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Softer shadow */
 }
 
-.card:hover {
-  transform: translateY(-2px);
+/* Add a wrapper class for hover effects to avoid applying to all cards if not desired */
+.card-hover-effect .card:hover {
+  transform: translateY(-4px) scale(1.01); /* More noticeable lift and slight scale */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); /* Enhanced shadow on hover */
+}
+
+/* Style adjustments for specific dashboard layout */
+.lg\:col-span-2 > div { /* Target direct children if needed */
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .theme-toggle {
@@ -88,4 +111,17 @@ body {
   border: none;
   color: var(--foreground);
   font-size: 1.5rem;
+  padding: 0.5rem; /* Add padding for easier clicking */
+  border-radius: 50%; /* Make it circular */
+  transition: background-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background-color: var(--secondary); /* Subtle background on hover */
+}
+
+/* Ensure ::placeholder styles are consistent */
+::placeholder {
+  color: var(--foreground);
+  opacity: 0.6; /* Make placeholder slightly less prominent */
 }
