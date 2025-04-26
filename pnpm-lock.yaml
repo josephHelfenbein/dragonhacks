@@ -8,9 +8,15 @@ importers:
 
   .:
     dependencies:
+      framer-motion:
+        specifier: ^12.9.2
+        version: 12.9.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       next:
         specifier: 15.3.1
         version: 15.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      nextjs:
+        specifier: 'file:'
+        version: 'file:'
       react:
         specifier: ^19.0.0
         version: 19.1.0
@@ -796,6 +802,20 @@ packages:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
 
+  framer-motion@12.9.2:
+    resolution: {integrity: sha512-R0O3Jdqbfwywpm45obP+8sTgafmdEcUoShQTAV+rB5pi+Y1Px/FYL5qLLRe5tPtBdN1J4jos7M+xN2VV2oEAbQ==}
+    peerDependencies:
+      '@emotion/is-prop-valid': '*'
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      '@emotion/is-prop-valid':
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+
   fs-extra@11.1.0:
     resolution: {integrity: sha512-0rcTq621PD5jM/e0a3EJoGC/1TC5ZBCERW82LQuwfGnCa1V8w7dpYH1yNu+SLb6E5dkeCBzKEyLGlFrnr+dUyw==}
     engines: {node: '>=14.14'}
@@ -999,6 +1019,12 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  motion-dom@12.9.1:
+    resolution: {integrity: sha512-xqXEwRLDYDTzOgXobSoWtytRtGlf7zdkRfFbrrdP7eojaGQZ5Go4OOKtgnx7uF8sAkfr1ZjMvbCJSCIT2h6fkQ==}
+
+  motion-utils@12.8.3:
+    resolution: {integrity: sha512-GYVauZEbca8/zOhEiYOY9/uJeedYQld6co/GJFKOy//0c/4lDqk0zB549sBYqqV2iMuX+uHrY1E5zd8A2L+1Lw==}
+
   mri@1.2.0:
     resolution: {integrity: sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA==}
     engines: {node: '>=4'}
@@ -1037,6 +1063,9 @@ packages:
         optional: true
       sass:
         optional: true
+
+  'nextjs@file:':
+    resolution: {directory: '', type: directory}
 
   node-fetch@2.6.7:
     resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
@@ -2078,6 +2107,15 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
+  framer-motion@12.9.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
+    dependencies:
+      motion-dom: 12.9.1
+      motion-utils: 12.8.3
+      tslib: 2.8.1
+    optionalDependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
   fs-extra@11.1.0:
     dependencies:
       graceful-fs: 4.2.11
@@ -2259,6 +2297,12 @@ snapshots:
 
   mkdirp@3.0.1: {}
 
+  motion-dom@12.9.1:
+    dependencies:
+      motion-utils: 12.8.3
+
+  motion-utils@12.8.3: {}
+
   mri@1.2.0: {}
 
   ms@2.1.1: {}
@@ -2293,6 +2337,27 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
+
+  'nextjs@file:':
+    dependencies:
+      framer-motion: 12.9.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      next: 15.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+      vercel: 41.6.2
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@emotion/is-prop-valid'
+      - '@opentelemetry/api'
+      - '@playwright/test'
+      - '@swc/core'
+      - '@swc/wasm'
+      - babel-plugin-macros
+      - babel-plugin-react-compiler
+      - encoding
+      - rollup
+      - sass
+      - supports-color
 
   node-fetch@2.6.7:
     dependencies:
