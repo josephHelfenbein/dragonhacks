@@ -3,7 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/app/providers/ThemeProvider';
-import { HomeIcon, PoseIcon, TimerIcon, StatsIcon, MoonIcon, SunIcon, ChevronLeftIcon, ChevronRightIcon } from '@/app/components/ui/Icons'; // Assuming Chevron icons exist
+import { HomeIcon, PoseIcon, TimerIcon, StatsIcon, MoonIcon, SunIcon, ChevronLeftIcon, ChevronRightIcon } from '@/app/components/ui/Icons';
+import Image from 'next/image'; // Import the Image component
 
 // Define navigation items
 const navItems = [
@@ -28,12 +29,21 @@ export default function Sidebar({ expanded, onToggle }: SidebarProps) {
     <div className={`bg-[var(--sidebar-bg)] text-[var(--sidebar-foreground)] h-screen transition-all duration-300 ease-in-out ${expanded ? 'w-64' : 'w-20'} fixed left-0 top-0 flex flex-col justify-between shadow-lg z-10`}>
       <div>
         {/* Header with Logo and Toggle Button */}
-        <div className="p-4 flex items-center justify-between border-b border-[var(--border-color)] border-opacity-20">
+        {/* Increased height from h-16 to h-20 */}
+        <div className="p-4 flex items-center justify-between border-b border-[var(--border-color)] border-opacity-20 h-20"> 
           {/* Logo visible only when expanded */}
           {expanded && (
-            <Link href="/" className="flex items-center gap-2">
-              {/* <img src="/logo.svg" alt="Focura Logo" className="h-8 w-auto" /> Replace with your logo */}
-              <span className="text-[var(--accent)] font-bold text-xl">Focura</span>
+            <Link href="/" className="flex items-center gap-2 flex-shrink-0">
+              {/* Replace text with Image component */}
+              <Image 
+                src="/images/focura.png" // Make sure this path is correct relative to the public folder
+                alt="Focura Logo" 
+                width={50} // Increased width from 32
+                height={50} // Increased height from 32
+                className="h-13 w-auto" // Increased height from h-8
+              />
+              {/* Increased text size from text-xl to text-2xl */}
+              <span className="text-[var(--accent)] font-bold text-2xl">Focura</span>
             </Link>
           )}
           {/* Expand/Collapse Button */}

@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Study Buddy - Smart Study Companion",
-  description: "A smart study companion that monitors your posture, phone usage, and helps you stay productive",
+  title: "Focura",
+  description: "A study companion that monitors your posture, phone usage, and helps you stay productive",
 };
 
 export default function RootLayout({
