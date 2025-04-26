@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ThemeProvider from "@/app/providers/ThemeProvider";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,6 +24,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Read public env variables on the server
+  const pusherKey = process.env.NEXT_PUBLIC_PUSHER_KEY;
+  const pusherCluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
+
   return (
     <html lang="en">
       <body
@@ -31,6 +36,17 @@ export default function RootLayout({
         <ThemeProvider>
           {children}
         </ThemeProvider>
+
+        {/* Inject ENV variables for client-side script */}
+        <Script id="pusher-env-vars" strategy="beforeInteractive">
+          {`
+            window.PUSHER_KEY = "${pusherKey}";
+            window.PUSHER_CLUSTER = "${pusherCluster}";
+          `}
+        </Script>
+
+        {/* Load the Pusher library */}
+        <Script src="https://js.pusher.com/8.4.0/pusher.min.js" strategy="lazyOnload" />
       </body>
     </html>
   );
