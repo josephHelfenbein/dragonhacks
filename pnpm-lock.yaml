@@ -11,6 +11,9 @@ importers:
       next:
         specifier: 15.3.1
         version: 15.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      nextjs:
+        specifier: 'file:'
+        version: 'file:'
       react:
         specifier: ^19.0.0
         version: 19.1.0
@@ -1037,6 +1040,9 @@ packages:
         optional: true
       sass:
         optional: true
+
+  'nextjs@file:':
+    resolution: {directory: '', type: directory}
 
   node-fetch@2.6.7:
     resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
@@ -2293,6 +2299,25 @@ snapshots:
     transitivePeerDependencies:
       - '@babel/core'
       - babel-plugin-macros
+
+  'nextjs@file:':
+    dependencies:
+      next: 15.3.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+      vercel: 41.6.2
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@opentelemetry/api'
+      - '@playwright/test'
+      - '@swc/core'
+      - '@swc/wasm'
+      - babel-plugin-macros
+      - babel-plugin-react-compiler
+      - encoding
+      - rollup
+      - sass
+      - supports-color
 
   node-fetch@2.6.7:
     dependencies:

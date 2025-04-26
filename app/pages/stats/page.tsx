@@ -1,10 +1,10 @@
 import DashboardLayout from "@/app/components/layouts/DashboardLayout";
-import Dashboard from "@/app/components/dashboard/Dashboard";
 
-export default function Home() {
+export default function StatsPage() {
   return (
     <DashboardLayout>
-      <Dashboard />
+      <h1>Stats</h1>
+      <p>Here are your stats.</p>
     </DashboardLayout>
   );
 }
