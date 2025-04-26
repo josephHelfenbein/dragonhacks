@@ -8,6 +8,7 @@ import PhoneAlert from "@/app/components/features/PhoneAlert";
 import WaterReminder from "@/app/components/features/WaterReminder";
 import CameraMonitor from "@/app/components/features/CameraMonitor";
 import Pusher from 'pusher-js'; // Import Pusher
+import { toast } from 'sonner'; // Import toast from sonner
 
 // Import motion from framer-motion for animations
 import { motion } from "framer-motion";
@@ -27,26 +28,6 @@ export default function Dashboard() {
     }
 
     // --- Start of Pusher Logic ---
-    // Function to request notification permission and show notification
-    function showNotification(title: string, body: string) {
-        if (!("Notification" in window)) {
-            console.warn("This browser does not support desktop notification");
-            // Optionally provide a fallback alert or UI feedback
-            // alert(`${title}: ${body}`);
-        } else if (Notification.permission === "granted") {
-            new Notification(title, { body: body });
-        } else if (Notification.permission !== "denied") {
-            Notification.requestPermission().then(function (permission) {
-                if (permission === "granted") {
-                    new Notification(title, { body: body });
-                }
-            });
-        }
-        // If permission is denied, do nothing (or log it)
-        else {
-             console.log("Notification permission denied.");
-        }
-    }
 
     // Ensure environment variables are available
     const pusherKey = process.env.NEXT_PUBLIC_PUSHER_KEY;
@@ -80,9 +61,17 @@ export default function Dashboard() {
         }
 
         if (message === 'drink water') {
-            showNotification('Hydration Reminder', 'Time to drink some water!');
+            // Use toast for notification
+            toast.info('Hydration Reminder', {
+              description: 'Time to drink some water!',
+              duration: 5000, // Show for 5 seconds
+            });
         } else if (message === 'bad posture') {
-            showNotification('Posture Check', 'Sit up straight! Take care of your back.');
+            // Use toast for notification
+            toast.warning('Posture Check', {
+              description: 'Sit up straight! Take care of your back.',
+              duration: 5000,
+            });
         } else {
             console.log("Received unhandled message:", message);
         }
@@ -115,6 +104,20 @@ export default function Dashboard() {
   const backgroundStyle = theme === 'dark' 
     ? { background: 'radial-gradient(circle, rgba(30,33,50,1) 0%, rgba(18,20,30,1) 100%)' } 
     : { background: 'linear-gradient(135deg, #f5f7fa 0%, #e0e7ef 100%)' };
+
+  // Animation variants for grid items
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.1, // Stagger animation
+        duration: 0.5,
+        ease: "easeOut",
+      },
+    }),
+  };
 
   return (
     // Apply background style and padding
@@ -160,19 +163,27 @@ export default function Dashboard() {
       </motion.p>
 
       {/* Main Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Apply hover effect wrapper to grid items */}
-        <div className="lg:col-span-2 card-hover-effect">
+      <motion.div 
+        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+        initial="hidden"
+        animate="visible"
+        variants={{ // Container variants for staggering children
+          visible: { transition: { staggerChildren: 0.1 } }
+        }}
+      >
+        {/* Apply hover effect wrapper and animation to grid items */}
+        <motion.div className="lg:col-span-2 card-hover-effect" variants={itemVariants} custom={0}>
           <CameraMonitor />
-        </div>
+        </motion.div>
         
         <div className="space-y-6">
-          <div className="card-hover-effect"><PomodoroTimer /></div>
-          <div className="card-hover-effect"><PostureMonitor /></div>
-          <div className="card-hover-effect"><PhoneAlert /></div>
-          <div className="card-hover-effect"><WaterReminder /></div>
+          {/* Wrap each card in motion.div */}
+          <motion.div className="card-hover-effect" variants={itemVariants} custom={1}><PomodoroTimer /></motion.div>
+          <motion.div className="card-hover-effect" variants={itemVariants} custom={2}><PostureMonitor /></motion.div>
+          <motion.div className="card-hover-effect" variants={itemVariants} custom={3}><PhoneAlert /></motion.div>
+          <motion.div className="card-hover-effect" variants={itemVariants} custom={4}><WaterReminder /></motion.div>
         </div>
-      </div>
+      </motion.div>
       
       {/* Add CSS directly for card styles if needed, or rely on global.css */}
       <style jsx>{`
