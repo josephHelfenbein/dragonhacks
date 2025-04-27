@@ -1,7 +1,5 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&display=swap');
-
-
+/* @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;700&display=swap'); */
 
 :root {
   /* Light Theme - Study Focused */
@@ -129,7 +127,10 @@ body {
 }
 
 /* Style adjustments for specific dashboard layout */
-.lg\:col-span-2 > div { /* Target direct children if needed */
+.lg\:col-span-2 > div { 
+  height: 100%; /* Make the div fill the full height */
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--border-color);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
