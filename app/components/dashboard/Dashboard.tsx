@@ -23,7 +23,7 @@ export default function Dashboard() {
   
   const signallingChannel = useRef<any>(null);
   const pcRef = useRef<RTCPeerConnection | null>(null);
-  
+
   useEffect(() => {
     (async () => {
       try {

@@ -1,13 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Pusher from 'pusher-js';
 
 export default function PostureMonitor() {
   // start as good
   const [status, setStatus] = useState<"good" | "bad" | "unknown">("good");
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
-
+  const audioRef = useRef<HTMLAudioElement>(null);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      audioRef.current = new Audio('/bell.wav');
+    }
+  }, []);
   useEffect(() => {
     const pusherKey = process.env.NEXT_PUBLIC_PUSHER_KEY;
     const pusherCluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
@@ -30,6 +35,7 @@ export default function PostureMonitor() {
         setStatus("good");
       } else {
         setStatus("bad");
+        audioRef.current?.play();
       }
     });
 

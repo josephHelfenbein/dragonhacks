@@ -1,12 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Pusher from 'pusher-js';
 
 export default function PhoneAlert() {
   const [isOnPhone, setIsOnPhone] = useState(false);
   const [instances, setInstances] = useState(0);
-
+  const audioRef = useRef<HTMLAudioElement>(null);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      audioRef.current = new Audio('/bell.wav');
+    }
+  }, []);
   useEffect(() => {
     const pusherKey = process.env.NEXT_PUBLIC_PUSHER_KEY;
     const pusherCluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
@@ -27,7 +32,7 @@ export default function PhoneAlert() {
       if (msg.startsWith("📱 Suspicious!")) {
         setIsOnPhone(true);
         setInstances(prev => prev + 1);
-        setTimeout(() => setIsOnPhone(false), 10000);
+        audioRef.current?.play();
       } else if (msg.startsWith("✅ You're no longer")) {
         setIsOnPhone(false);
       }
@@ -43,7 +48,7 @@ export default function PhoneAlert() {
     return (
       <div className="card bg-[var(--secondary)] bg-opacity-20">
         <h3 className="text-lg font-semibold mb-2">Phone Monitor</h3>
-        <p>No phone distractions detected in this session.</p>
+        <p>No phone detected.</p>
       </div>
     );
   }
@@ -66,7 +71,7 @@ export default function PhoneAlert() {
         </div>
       ) : (
         <div>
-          <p>Phone distractions detected: {instances} times this session</p>
+        <p>No phone detected.</p>
         </div>
       )}
     </div>
