@@ -9,12 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.0.0",
     "@types/pusher-js": "^5.1.0",
+    "antd": "^5.24.8",
+    "chart.js": "^4.4.9",
     "framer-motion": "^12.9.2",
     "next": "15.3.1",
     "nextjs": "file:",
     "pusher-js": "^8.4.0",
     "react": "^19.0.0",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0",
     "sonner": "^2.0.3",
     "vercel": "^41.6.2"
