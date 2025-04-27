@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { WaterDropIcon } from "@/app/components/ui/Icons";
 
+const HYDRATION_INTERVAL = 2 * 60 * 60 * 1000; // 2 hours in ms
+
 export default function WaterReminder() {
   const [lastDrank, setLastDrank] = useState<Date | null>(null);
   const [glasses, setGlasses] = useState(0);
@@ -11,6 +13,26 @@ export default function WaterReminder() {
     setLastDrank(new Date());
     setGlasses(glasses + 1);
   };
+
+////WATER TIMER 
+   // Whenever lastDrank changes, reset the 2-hour timer
+  useEffect(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+
+    const elapsed = lastDrank ? Date.now() - lastDrank.getTime() : 0;
+    const delay = lastDrank
+      ? Math.max(0, HYDRATION_INTERVAL - elapsed)
+      : HYDRATION_INTERVAL;
+
+    timerRef.current = setTimeout(() => {
+      alert("It’s been 2 hours since your last water break. Time to hydrate!");
+    }, delay);
+
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [lastDrank]);
+    
 
   return (
     <div className="card bg-[var(--primary)] bg-opacity-20">
