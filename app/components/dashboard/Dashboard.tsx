@@ -57,6 +57,20 @@ export default function Dashboard() {
     logsChan.bind('new_log', (data: any) => {
       if (data?.message) setLogs(prev => [...prev, data.message]);
     });
+    const badPostureCh = pusher.subscribe('bad-posture');
+    badPostureCh.bind('bad-posture', (data: any) => {
+      if (data?.message) {
+        setLogs(prev => [...prev, data.message]);
+        toast.warning('Bad Posture Detected', { description: data.message, duration: 5000 });
+      }
+    });
+    const phoneAlertCh = pusher.subscribe('phone_suspicion');
+    phoneAlertCh.bind('phone_suspicion', (data: any) => {
+      if (data?.message) {
+        setLogs(prev => [...prev, data.message]);
+        toast.error('Phone Usage Detected', { description: data.message, duration: 5000 });
+      }
+    });
     
     const featCh = pusher.subscribe('my-channel');
     featCh.bind('my-event', (data: any) => {
