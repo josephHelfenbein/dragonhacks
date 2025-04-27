@@ -205,14 +205,15 @@ export default function Dashboard() {
     </button>
     </motion.div>
     </div>
-    <motion.div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg max-h-48 overflow-y-auto font-mono text-xs">
+    
+      <motion.div className="grid grid-cols-1 lg:grid-cols-3 gap-6" initial="hidden" animate="visible" variants={{ visible: { transition:{ staggerChildren:0.1 }}}}>
+      <motion.div className="lg:col-span-2 h-[500px] card-hover-effect" variants={itemVariants} custom={0}>
+      <CameraMonitor cameraStream={cameraStream} cameraError={cameraError} isMonitoring={isMonitoring} onToggleMonitoring={()=>setIsMonitoring(!isMonitoring)} />
+      <motion.div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg max-h-48 overflow-y-auto font-mono text-xs mt-5">
     {logs.length===0?
       <p className="text-gray-500">No logs yet.</p>:
       logs.map((l,i)=><div key={i}>{l}</div>)}
       </motion.div>
-      <motion.div className="grid grid-cols-1 lg:grid-cols-3 gap-6" initial="hidden" animate="visible" variants={{ visible: { transition:{ staggerChildren:0.1 }}}}>
-      <motion.div className="lg:col-span-2 h-[500px] card-hover-effect" variants={itemVariants} custom={0}>
-      <CameraMonitor cameraStream={cameraStream} cameraError={cameraError} isMonitoring={isMonitoring} onToggleMonitoring={()=>setIsMonitoring(!isMonitoring)} />
       </motion.div>
       <div className="space-y-6">
       <motion.div className="card-hover-effect" variants={itemVariants} custom={1}><PomodoroTimer /></motion.div>
