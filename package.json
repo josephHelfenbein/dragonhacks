@@ -14,6 +14,7 @@
     "antd": "^5.24.8",
     "chart.js": "^4.4.9",
     "framer-motion": "^12.9.2",
+    "lucide-react": "^0.503.0",
     "next": "15.3.1",
     "nextjs": "file:",
     "pusher-js": "^8.4.0",
