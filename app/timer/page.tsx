@@ -2,6 +2,7 @@
 
 import DashboardLayout from "@/app/components/layouts/DashboardLayout";
 import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 
 function pad(n: number) {
   return n.toString().padStart(2, "0");
@@ -95,19 +96,44 @@ export default function TimerPage() {
     setTimeLeft(sessionLength * 60);
   };
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+  };
+
   // Settings UI
   const settingsDisabled = isRunning;
 
   return (
     <DashboardLayout>
-      <div className="p-0 flex flex-col items-center justify-center min-h-[80vh] w-full max-w-full">
-        <div className="w-full py-10 px-0 mb-8 flex items-center justify-center">
+      <motion.div
+        className="p-0 flex flex-col items-center justify-center min-h-[80vh] w-full max-w-full"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        <motion.div
+          className="w-full py-10 px-0 mb-8 flex items-center justify-center"
+          variants={itemVariants}
+        >
           <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight w-full text-center">
             Focus Timer
           </h1>
-        </div>
+        </motion.div>
         {/* Timer Display */}
-        <div className={`card w-full max-w-4xl p-8 mb-10 flex flex-col items-center ${theme === "mint" ? "bg-[var(--mint)] bg-opacity-10" : theme === "coral" ? "bg-[var(--coral)] bg-opacity-10" : ""}`}>
+        <motion.div
+          className={`card w-full max-w-4xl p-8 mb-10 flex flex-col items-center ${theme === "mint" ? "bg-[var(--mint)] bg-opacity-10" : theme === "coral" ? "bg-[var(--coral)] bg-opacity-10" : ""}`}
+          variants={itemVariants}
+        >
           <div className="text-lg font-medium mb-2">
             {isSession ? "Focus Session" : (sessionCount > 0 && sessionCount % sessionsBeforeLongBreak === 0 ? "Long Break" : "Break")}
           </div>
@@ -116,13 +142,13 @@ export default function TimerPage() {
           </div>
           <div className="flex gap-4">
             <button
-              className="btn btn-primary"
+              className="btn-primary"
               onClick={handleStartPause}
             >
               {isRunning ? "Pause" : "Start"}
             </button>
             <button
-              className="btn btn-secondary"
+              className="btn-primary"
               onClick={handleReset}
             >
               Reset
@@ -131,9 +157,12 @@ export default function TimerPage() {
           <div className="mt-2 text-xs text-gray-500">
             Session #{sessionCount + (isSession ? 1 : 0)}
           </div>
-        </div>
+        </motion.div>
         {/* Settings */}
-        <div className="card w-full max-w-4xl p-8 border border-[var(--secondary)] shadow-sm space-y-8">
+        <motion.div
+          className="card w-full max-w-4xl p-8 border border-[var(--secondary)] shadow-sm space-y-8"
+          variants={itemVariants}
+        >
           <h2 className="text-xl font-semibold mb-2">Timer Settings</h2>
           {/* Focus Session Settings */}
           <div>
@@ -306,8 +335,8 @@ export default function TimerPage() {
           <div className="text-xs text-gray-500 pt-2">
             You can only change settings when the timer is not running.
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </DashboardLayout>
   );
 }
