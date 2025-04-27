@@ -57,7 +57,7 @@ export default function Dashboard() {
     logsChan.bind('new_log', (data: any) => {
       if (data?.message) setLogs(prev => [...prev, data.message]);
     });
-    logsChan.bind('bad-posture', (data: any) => {
+    logsChan.bind('bad_posture', (data: any) => {
       if (data?.message) {
         toast.warning('Bad Posture Detected', { description: data.message, duration: 5000 });
       }
