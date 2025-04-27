@@ -4,41 +4,38 @@ import { useState, useEffect } from "react";
 import Pusher from 'pusher-js';
 
 export default function PostureMonitor() {
-  const [status, setStatus] = useState<'good' | 'bad' | 'unknown'>('unknown');
+  // start as good
+  const [status, setStatus] = useState<"good" | "bad" | "unknown">("good");
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
-  
-  // Connect to Pusher and listen for posture events
+
   useEffect(() => {
     const pusherKey = process.env.NEXT_PUBLIC_PUSHER_KEY;
     const pusherCluster = process.env.NEXT_PUBLIC_PUSHER_CLUSTER;
-    
     if (!pusherKey || !pusherCluster) {
-      console.error("Pusher environment variables not set!");
+      console.error("Pusher env vars missing!");
       return;
     }
-    
+
     const pusher = new Pusher(pusherKey, { cluster: pusherCluster });
-    const logsChan = pusher.subscribe('logs');
-    
-    logsChan.bind('bad_posture', (data: any) => {
-      if (data?.message) {
-        setStatus('bad');
-        setLastChecked(new Date());
+    const logsChan = pusher.subscribe("logs");
+
+    logsChan.bind("bad_posture", (data: any) => {
+      const msg: string = data?.message;
+      if (!msg) return;
+
+      setLastChecked(new Date());
+
+      // flip back to good on the “Posture corrected!” line
+      if (msg.startsWith("✅ Posture corrected!")) {
+        setStatus("good");
+      } else {
+        setStatus("bad");
       }
     });
-    
-    // For demo purposes, still keep random status changes
-    const interval = setInterval(() => {
-      const statuses: ('good' | 'bad' | 'unknown')[] = ['good', 'bad', 'bad', 'good', 'good', 'good'];
-      setStatus(statuses[Math.floor(Math.random() * statuses.length)]);
-      setLastChecked(new Date());
-    }, 10000);
-    
+
     return () => {
-      clearInterval(interval);
       logsChan.unbind_all();
-      pusher.unsubscribe('logs');
-      pusher.disconnect();
+      pusher.unsubscribe("logs");
     };
   }, []);
   

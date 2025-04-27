@@ -50,7 +50,23 @@ export default function Dashboard() {
     }
     
     Pusher.logToConsole = process.env.NODE_ENV !== 'production';
-    
+    // somewhere at the top of your component (or in a utils file)
+    function showNotification(title: string, body: string) {
+      if (!("Notification" in window)) {
+        console.warn("This browser does not support desktop notifications");
+        return;
+      }
+      if (Notification.permission === "granted") {
+        new Notification(title, { body });
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+            new Notification(title, { body });
+          }
+        });
+      }
+    }
+
     const pusher = new Pusher(pusherKey, { cluster: pusherCluster });
     
     const logsChan = pusher.subscribe('logs');
@@ -58,20 +74,24 @@ export default function Dashboard() {
       if (data?.message) setLogs(prev => [...prev, data.message]);
     });
     logsChan.bind('bad_posture', (data: any) => {
+      
       if (data?.message) {
         toast.warning('Bad Posture Detected', { description: data.message, duration: 5000 });
       }
+      showNotification("Bad Posture Detected", data.message);
     });
     logsChan.bind('phone_suspicion', (data: any) => {
       if (data?.message) {
         toast.error('Phone Usage Detected', { description: data.message, duration: 5000 });
       }
+      showNotification("Phone Usage Detected", data.message);
     });
     //water reminder
     logsChan.bind('water_reminder', (data: any) => {
       if (data?.message) {
         toast.error('Remember to drink water', { description: data.message, duration: 5000 });
       }
+      showNotification("Hydration Reminder", data.message);
     });
     
     const pendingCandidates: RTCIceCandidateInit[] = [];
