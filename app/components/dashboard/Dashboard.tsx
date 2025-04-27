@@ -57,17 +57,13 @@ export default function Dashboard() {
     logsChan.bind('new_log', (data: any) => {
       if (data?.message) setLogs(prev => [...prev, data.message]);
     });
-    const badPostureCh = pusher.subscribe('bad-posture');
-    badPostureCh.bind('bad-posture', (data: any) => {
+    logsChan.bind('bad-posture', (data: any) => {
       if (data?.message) {
-        setLogs(prev => [...prev, data.message]);
         toast.warning('Bad Posture Detected', { description: data.message, duration: 5000 });
       }
     });
-    const phoneAlertCh = pusher.subscribe('phone_suspicion');
-    phoneAlertCh.bind('phone_suspicion', (data: any) => {
+    logsChan.bind('phone_suspicion', (data: any) => {
       if (data?.message) {
-        setLogs(prev => [...prev, data.message]);
         toast.error('Phone Usage Detected', { description: data.message, duration: 5000 });
       }
     });
@@ -107,7 +103,7 @@ export default function Dashboard() {
     pusher.connection.bind('error', (err: any) => console.error('Pusher error', err));
     
     return () => {
-      [logsChan, badPostureCh, phoneAlertCh, signallingChannel.current].forEach(c => {
+      [logsChan, signallingChannel.current].forEach(c => {
         c?.unbind_all();
         c?.unsubscribe();
       });

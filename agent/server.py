@@ -147,13 +147,13 @@ def start_agent(data=None):
             if(line.startswith("Starting") or line.startswith("Capturing") or line.startswith("✅ Body posture calibrated") or line.startswith("✅ Face angle calibrated") or line.startswith("❌")):
                 http_pusher.trigger('logs', 'new_log', {'message': line})
             elif(line.startswith("⚠️ Bad posture detected!")):
-                http_pusher.trigger('bad_posture', 'new_log', {'message': line})
+                http_pusher.trigger('logs', 'bad_posture', {'message': line})
             elif(line.startswith("📱 Suspicious!")):
-                http_pusher.trigger('phone_suspicion', 'new_log', {'message': line})
+                http_pusher.trigger('logs', 'phone_suspicion', {'message': line})
             elif(line.startswith("✅ You're no longer")):
-                http_pusher.trigger('phone_suspicion', 'new_log', {'message': line})
+                http_pusher.trigger('logs', 'phone_suspicion', {'message': line})
             elif(line.startswith("✅ Posture corrected!")):
-                http_pusher.trigger('bad_posture', 'new_log', {'message': line})
+                http_pusher.trigger('logs', 'bad_posture', {'message': line})
         proc.stdout.close()
         proc.wait()
         print(f"⚠️ Agent exited ({proc.returncode})")
