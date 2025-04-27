@@ -39,8 +39,6 @@ def extract_relevant_features(landmarks):
         mp_pose.PoseLandmark.RIGHT_SHOULDER,
         mp_pose.PoseLandmark.LEFT_EAR,
         mp_pose.PoseLandmark.RIGHT_EAR,
-        mp_pose.PoseLandmark.LEFT_HIP,
-        mp_pose.PoseLandmark.RIGHT_HIP
     ]
     
     features = []
