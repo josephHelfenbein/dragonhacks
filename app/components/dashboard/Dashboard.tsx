@@ -195,6 +195,13 @@ export default function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.6 }}
       >
+{/* bouncing book emoji */}
++    <span
++      className="text-3xl animate-bounce"
++      role="img"
++      aria-label="books"
++    >
+         </span>
         "Stay focused, stay healthy. Let Focura guide your study journey!"
       </motion.p>
 
