@@ -5,17 +5,17 @@
 
 :root {
   /* Light Theme - Study Focused */
-  --background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
-  --foreground: #212529; /* Darker gray for text */
-  --primary: #D6EAF8;  /* Very light blue, like paper */
-  --secondary: #E9ECEF; /* Light gray */
-  --accent: #34495E; /* Dark grayish blue, like ink */
+  --background: transparent; 
+  --foreground: #212529; 
+   --primary: rgba(2, 132, 199, 0.8); /* Semi-transparent blue */
+  --secondary: rgba(186, 230, 253, 0.3); /* Very light transparent blue */
+  --accent: #1d4ed8;
   --mint: #A9DFBF; /* Softer mint */
   --coral: #F5B7B1; /* Softer coral */
   --sidebar-bg: #f8f9fa; /* Slightly off-white */
   --sidebar-foreground: #495057; /* Dark gray for sidebar text */
-  --card-bg: #ffffff;
-  --border-color: #dee2e6; /* Lighter border */
+  --card-bg: rgba(255, 255, 255, 0.2); /* Highly transparent white */
+  --border-color: rgba(255, 255, 255, 0.3); /* Light border */
 }
 
 @theme inline {
@@ -44,6 +44,9 @@
 
 body {
   background: var(--background);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+   background-size: cover;
   color: var(--foreground);
   font-family: var(--font-sans);
   margin: 0;
@@ -110,6 +113,7 @@ body {
 }
 
 .card {
+  backdrop-filter: blur(10px);
   background-color: var(--card-bg);
   border: 1px solid var(--border-color); /* Add subtle border */
   border-radius: 12px; /* Slightly larger radius */
