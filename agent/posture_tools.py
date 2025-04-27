@@ -112,13 +112,13 @@ async def posture_check_tool():
             return {"status": "error", "error": f"Posture capture failed: {str(e)}"}
         
         difference = np.linalg.norm(current_features - calibrated_features) / np.linalg.norm(calibrated_features)
-        posture_good = difference < 0.15
+        posture_good = difference < 0.2
         
         return {
             "status": "success",
             "posture_good": posture_good,
             "deviation": float(difference),
-            "threshold": 0.15
+            "threshold": 0.2
         }
         
     except Exception as e:

@@ -2,9 +2,14 @@
 import asyncio
 import time
 import sys
+import os
+import requests
+import base64
 from typing import Dict, Any, Optional
 from dataclasses import dataclass, field
 from langgraph.graph import StateGraph, END
+import cv2
+from server import webrtc_capture_frame
 
 @dataclass
 class PostureState:
@@ -27,7 +32,6 @@ async def check_camera(state: PostureState):
     print("Checking camera access...")
     
     try:
-        from server import webrtc_capture_frame
         
         # Try multiple times with a delay
         for attempt in range(3):
@@ -136,14 +140,29 @@ async def check_posture_and_attention(state: PostureState):
                                 state.last_face_angle_result = face_result
                                 looking_at_phone = face_result["looking_down"]
                                 
+
+
                                 if looking_at_phone and not state.phone_notification_shown:
-                                    print(f"📱 Suspicious! You appear to be looking down at your phone or device.")
-                                    print(f"   Vertical deviation: {face_result['vertical_deviation']:.2f}°")
-                                    state.phone_notification_shown = True
-                                    state.phone_suspicion_count += 1
+                                    cap_res = await webrtc_capture_frame()
+                                    if cap_res["status"] == "success":
+                                        frame = cap_res["frame"]
+                                        result = await ask_gemini_if_looking_at_phone(frame)
+
+                                        if result == "yes":
+                                            print(f"📱 Suspicious! You appear to be looking down at your phone or device.")
+                                            print(f"   Vertical deviation: {face_result['vertical_deviation']:.2f}°")
+                                            state.phone_notification_shown = True
+                                            state.phone_suspicion_count += 1
                                 elif not looking_at_phone and state.phone_notification_shown:
-                                    print(f"✅ You're no longer looking down at your phone.")
-                                    state.phone_notification_shown = False
+                                    cap_res = await webrtc_capture_frame()
+                                    if cap_res["status"] == "success":
+                                        frame = cap_res["frame"]
+                                        result = await ask_gemini_if_looking_at_phone(frame)
+
+                                        if result == "no":
+                                            print(f"✅ You're no longer looking down at your phone.")
+                                            state.phone_notification_shown = False
+                                    
                         except Exception as e:
                             print(f"⚠️ Face angle check error: {str(e)}")
                             
@@ -205,6 +224,43 @@ async def main():
     finally:
         if final_state.get("monitor_task", None):
             final_state.get("monitor_task").cancel()
+
+
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+
+async def ask_gemini_if_looking_at_phone(frame):
+    ret, buffer = cv2.imencode('.jpg', frame)
+    image_base64 = base64.b64encode(buffer).decode()
+
+    payload = {
+        "contents": [
+            {
+                "parts": [
+                    {"text": "Is the person in the image looking at their phone? Respond with only 'yes' or 'no' with no punctuation or other words. Be strict, you need to see a phone in the image to say 'yes'."},
+                    {
+                        "inline_data": {
+                            "mime_type": "image/jpeg",
+                            "data": image_base64
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+
+    response = requests.post(GEMINI_URL, json=payload)
+    response.raise_for_status()
+    data = response.json()
+
+    candidates = data.get("candidates", [])
+    if candidates:
+        text_response = candidates[0]["content"]["parts"][0]["text"].strip().lower()
+        return text_response
+    else:
+        return None
+
 
 if __name__ == "__main__":
     try:
