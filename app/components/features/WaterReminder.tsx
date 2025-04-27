@@ -8,7 +8,7 @@ const HYDRATION_INTERVAL = 2 * 60 * 60 * 1000; // 2 hours in ms
 export default function WaterReminder() {
   const [lastDrank, setLastDrank] = useState<Date | null>(null);
   const [glasses, setGlasses] = useState(0);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const drinkWater = () => {
     setLastDrank(new Date());

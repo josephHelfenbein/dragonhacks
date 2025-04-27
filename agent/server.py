@@ -6,12 +6,15 @@ import time
 import logging
 import asyncio
 import json
+
+import av
+av.logging.set_level(av.logging.ERROR)
+
 import pusher
 import pusherclient
 from dotenv import load_dotenv
-from aiortc import RTCPeerConnection, RTCSessionDescription
+from aiortc import RTCPeerConnection, RTCSessionDescription, RTCIceCandidate
 
-del load_dotenv
 load_dotenv()
 
 http_pusher = pusher.Pusher(
@@ -24,23 +27,21 @@ http_pusher = pusher.Pusher(
 
 cluster = os.getenv("PUSHER_APP_CLUSTER")
 pusherclient.Pusher.host = f"ws-{cluster}.pusher.com"
-
 ws_pusher = pusherclient.Pusher(
     os.getenv("PUSHER_APP_KEY"),
     secure=True,
     port=443,
     log_level=logging.INFO
 )
-
-def _on_error(data):
-    print(f"❌ Pusher error: {data}")
-ws_pusher.connection.bind('pusher:error', _on_error)
+ws_pusher.connection.bind('pusher:error', lambda data: print(f"❌ Pusher error: {data}"))
 
 loop = asyncio.new_event_loop()
 threading.Thread(target=loop.run_forever, daemon=True).start()
 
-frame_queue: asyncio.Queue = asyncio.Queue(loop=loop)
+frame_queue = asyncio.Queue()
 tcs = set()
+
+webrtc_ready = threading.Event()
 
 async def handle_offer(data):
     offer = json.loads(data)
@@ -51,6 +52,7 @@ async def handle_offer(data):
     def on_track(track):
         if track.kind == "video":
             async def recv_frames():
+                webrtc_ready.set()
                 while True:
                     frame = await track.recv()
                     img = frame.to_ndarray(format="bgr24")
@@ -59,9 +61,9 @@ async def handle_offer(data):
 
     desc = RTCSessionDescription(offer['sdp'], offer['type'])
     await pc.setRemoteDescription(desc)
-
     answer = await pc.createAnswer()
     await pc.setLocalDescription(answer)
+
     http_pusher.trigger('webrtc-signaling', 'answer', {
         'sdp': pc.localDescription.sdp,
         'type': pc.localDescription.type
@@ -69,8 +71,13 @@ async def handle_offer(data):
 
 async def handle_candidate(data):
     cand = json.loads(data)
+    ice = RTCIceCandidate(
+        sdpMid=cand.get('sdpMid'),
+        sdpMLineIndex=cand.get('sdpMLineIndex'),
+        candidate=cand.get('candidate')
+    )
     for pc in tcs:
-        await pc.addIceCandidate(cand)
+        await pc.addIceCandidate(ice)
 
 def on_connect(data):
     ctrl = ws_pusher.subscribe('control')
@@ -84,50 +91,55 @@ ws_pusher.connection.bind('pusher:connection_established', on_connect)
 ws_pusher.connect()
 print("🚀 Pusher client initialized, awaiting control & signaling...")
 
-async def safely_capture_frame():
-    """Safely capture a frame from the camera."""
+import posture_tools
+async def webrtc_capture_frame():
     try:
         frame = await asyncio.wait_for(frame_queue.get(), timeout=5.0)
         return {"status": "success", "frame": frame}
     except asyncio.TimeoutError:
-        return {"status": "error", "error": "No frame received from WebRTC in time"}
+        return {"status": "error", "error": "No WebRTC frame in time"}
+posture_tools.safely_capture_frame = webrtc_capture_frame
 
 agent_thread = None
 
-
 def start_agent(data=None):
-    """Spawn agent.py subprocess and send its output to Pusher 'logs' channel."""
     global agent_thread
     if agent_thread and agent_thread.is_alive():
-        print("Agent already running.")
+        print("🔹 Agent already running.")
         return
 
     def _run():
-        cmd = [sys.executable, "agent.py"]
+        webrtc_ready.wait()
+        print("🔹 WebRTC ready, starting agent.")
+        cmd = [sys.executable, '-u', 'agent.py']
         print(f"⏳ Starting agent subprocess: {cmd}")
         proc = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
+            bufsize=1
         )
-        for raw_line in proc.stdout:
-            line = raw_line.rstrip()
+        for raw in proc.stdout:
+            line = raw.rstrip()
             print(f"[agent] {line}")
             http_pusher.trigger('logs', 'new_log', {'message': line})
         proc.stdout.close()
         proc.wait()
-        print(f"⚠️ Agent subprocess exited with code {proc.returncode}")
+        print(f"⚠️ Agent exited ({proc.returncode})")
 
     agent_thread = threading.Thread(target=_run, daemon=True)
     agent_thread.start()
     print("✅ Agent thread started.")
 
+def main():
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("⏹️ Shutting down...")
+        if agent_thread and agent_thread.is_alive():
+            agent_thread.join()
 
-try:
-    while True:
-        time.sleep(1)
-except KeyboardInterrupt:
-    print("Shutting down.")
-    if agent_thread and agent_thread.is_alive():
-        agent_thread.join()
+if __name__ == "__main__":
+    main()
