@@ -67,6 +67,12 @@ export default function Dashboard() {
         toast.error('Phone Usage Detected', { description: data.message, duration: 5000 });
       }
     });
+    //water reminder
+    logsChan.bind('water_reminder', (data: any) => {
+      if (data?.message) {
+        toast.error('Remember to drink water', { description: data.message, duration: 5000 });
+      }
+    });
     
     const pendingCandidates: RTCIceCandidateInit[] = [];
     

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { WaterDropIcon } from "@/app/components/ui/Icons";
+import { toast } from 'sonner';
 
 const HYDRATION_INTERVAL = 2 * 60 * 60 * 1000; // 2 hours in ms
 
@@ -26,7 +27,10 @@ export default function WaterReminder() {
       : HYDRATION_INTERVAL;
 
     timerRef.current = setTimeout(() => {
-      alert("It's been 2 hours since your last water break. Time to hydrate!");
+      toast.info('Water Break Time', { 
+        description: "It's been 2 hours since your last water break. Time to hydrate!",
+        duration: 5000
+      });
     }, delay);
 
     return () => {
