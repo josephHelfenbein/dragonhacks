@@ -5,7 +5,7 @@
 
 :root {
   /* Light Theme - Study Focused */
-  --background: #FFFFFF;
+  --background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
   --foreground: #212529; /* Darker gray for text */
   --primary: #D6EAF8;  /* Very light blue, like paper */
   --secondary: #E9ECEF; /* Light gray */
