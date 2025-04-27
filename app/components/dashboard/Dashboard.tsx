@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -22,11 +23,11 @@ export default function Dashboard() {
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) {
-      setGreeting("Good morning 🌞");
+      setGreeting("Good morning 👋");
     } else if (hour < 18) {
-      setGreeting("Good afternoon ☀️");
+      setGreeting("Good afternoon 👋");
     } else {
-      setGreeting("Good evening 🌙");
+      setGreeting("Good evening 👋");
     }
 
     // Request camera access
@@ -195,13 +196,6 @@ export default function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.6 }}
       >
-{/* bouncing book emoji */}
-+    <span
-+      className="text-3xl animate-bounce"
-+      role="img"
-+      aria-label="books"
-+    >
-         </span>
         "Stay focused, stay healthy. Let Focura guide your study journey!"
       </motion.p>
 
