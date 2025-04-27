@@ -63,8 +63,14 @@ export default function MeditationPrompt({
             <p className="text-5xl font-mono mb-6 text-black">
               {mm}:{ss}
             </p>
-            {/* your relaxing music file in public/ */}
-            <audio ref={audioRef} src="/relaxing-music.mp3" loop />
+            {/* meditation music file in public/ */}
+             <audio
+                ref={audioRef}
+                src="/images/meditation_music.mp3"
+                loop
+                preload="auto"
+            />
+
           </div>
         </div>
       )}
