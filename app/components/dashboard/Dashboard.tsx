@@ -16,6 +16,8 @@ import { motion } from "framer-motion";
 export default function Dashboard() {
   const { theme } = useTheme();
   const [greeting, setGreeting] = useState("Welcome!");
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -26,6 +28,32 @@ export default function Dashboard() {
     } else {
       setGreeting("Good evening 👋");
     }
+
+    // Request camera access
+    const initializeCamera = async () => {
+      try {
+        // Request access to user's camera
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: false, // We don't need audio for posture monitoring
+        });
+        
+        // Set the stream in state
+        setCameraStream(stream);
+        setCameraError(null);
+        console.log("Camera initialized successfully");
+      } catch (err) {
+        // Handle errors (permission denied, no camera found, etc.)
+        console.error("Camera access error:", err);
+        setCameraError(err instanceof Error ? err.message : "Unknown camera error");
+        toast.error("Camera Error", {
+          description: "Could not access your camera. Please check permissions.",
+          duration: 5000,
+        });
+      }
+    };
+
+    initializeCamera();
 
     // --- Start of Pusher Logic ---
 
@@ -91,10 +119,18 @@ export default function Dashboard() {
 
     // Cleanup function when component unmounts
     return () => {
-        console.log("Cleaning up Pusher connection...");
-        channel.unbind_all(); // Unbind all event listeners
-        channel.unsubscribe(); // Unsubscribe from the channel
-        pusher.disconnect(); // Disconnect Pusher
+      // Stop all camera tracks when component unmounts
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => {
+          track.stop();
+        });
+        console.log("Camera tracks stopped");
+      }
+
+      console.log("Cleaning up Pusher connection...");
+      channel.unbind_all(); // Unbind all event listeners
+      channel.unsubscribe(); // Unsubscribe from the channel
+      pusher.disconnect(); // Disconnect Pusher
     };
     // --- End of Pusher Logic ---
 
@@ -172,8 +208,8 @@ export default function Dashboard() {
         }}
       >
         {/* Apply hover effect wrapper and animation to grid items */}
-        <motion.div className="lg:col-span-2 card-hover-effect" variants={itemVariants} custom={0}>
-          <CameraMonitor />
+        <motion.div className="lg:col-span-2 card-hover-effect h-[500px]" variants={itemVariants} custom={0}>
+          <CameraMonitor cameraStream={cameraStream} cameraError={cameraError} />
         </motion.div>
         
         <div className="space-y-6">
