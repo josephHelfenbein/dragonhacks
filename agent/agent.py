@@ -27,21 +27,27 @@ async def check_camera(state: PostureState):
     print("Checking camera access...")
     
     try:
-        from posture_tools import safely_capture_frame
+        from server import webrtc_capture_frame
         
-        result = await asyncio.to_thread(safely_capture_frame)
-        
-        if result["status"] == "success":
-            state.camera_working = True
-            print("✅ Camera check successful! Proceeding with calibration.")
-        else:
+        # Try multiple times with a delay
+        for attempt in range(3):
+            result = await webrtc_capture_frame()
+            
+            if result["status"] == "success":
+                state.camera_working = True
+                print("✅ Camera check successful! Proceeding with calibration.")
+                break
+            else:
+                print(f"❌ Camera check failed (attempt {attempt+1}/3): {result.get('error', 'Unknown error')}")
+                if attempt < 2:  # Only wait if more attempts remain
+                    print("Waiting 2 seconds before retrying...")
+                    await asyncio.sleep(2)
+        else:  # This runs if the for loop completed without a break
             state.camera_working = False
-            print(f"❌ Camera check failed: {result.get('error', 'Unknown error')}")
             print("\nTroubleshooting tips:")
-            print(" 1. Make sure no other application is using the camera")
-            print(" 2. Check camera permissions in System Preferences")
+            print(" 1. Make sure your camera is connected and enabled in the browser")
+            print(" 2. Refresh the web page and try again")
             print(" 3. Try closing and reopening the terminal")
-            print(" 4. Restart your computer if the issue persists")
     except Exception as e:
         state.camera_working = False
         print(f"❌ Unexpected error during camera check: {str(e)}")

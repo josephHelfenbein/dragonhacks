@@ -6,26 +6,20 @@ import mediapipe as mp
 import os
 import math
 import time
+from server import webrtc_capture_frame
 
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 calibrated_features = None
 calibrated_face_angle = None
 
-def capture_pose_features():
+async def capture_pose_features():
     """Capture a frame from the camera and extract pose features."""
     
-    cap = cv2.VideoCapture(1)
-
-    if not cap.isOpened():
-        raise RuntimeError("Camera could not be accessed.")
-    
-    ret, frame = cap.read()
-    cap.release()
-    
-    if not ret:
-        raise RuntimeError("Failed to capture frame from camera.")
-    
+    capture_result = await webrtc_capture_frame()
+        
+    frame = capture_result["frame"]
+        
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
     result = pose.process(frame_rgb)
     
@@ -85,7 +79,7 @@ async def calibrate_posture_tool():
         for i in range(5):
             print(f"Capturing pose {i+1}/5...")
             try:
-                features = await asyncio.to_thread(capture_pose_features)
+                features = await capture_pose_features()
                 features_list.append(features)
             except Exception as e:
                 return {"status": "error", "error": f"Capture failed: {str(e)}"}
@@ -113,7 +107,7 @@ async def posture_check_tool():
                 return {"status": "error", "error": "No calibration data available."}
         
         try:
-            current_features = await asyncio.to_thread(capture_pose_features)
+            current_features = await capture_pose_features()
         except Exception as e:
             return {"status": "error", "error": f"Posture capture failed: {str(e)}"}
         
@@ -200,7 +194,7 @@ async def calibrate_face_angle_tool():
     for i in range(5):
         print(f"Capturing face angle {i+1}/5...")
         
-        capture_result = await asyncio.to_thread(safely_capture_frame)
+        capture_result = await webrtc_capture_frame()
         if capture_result["status"] != "success":
             print(f"❌ Camera error: {capture_result.get('error', 'Unknown error')}")
             if i > 0 and face_angle_samples:
@@ -262,7 +256,7 @@ async def check_face_angle_tool():
             if calibrated_face_angle is None:
                 return {"status": "error", "error": "No face angle calibration data available."}
         
-        capture_result = await asyncio.to_thread(safely_capture_frame)
+        capture_result = await webrtc_capture_frame()
         if capture_result["status"] != "success":
             return {"status": "error", "error": capture_result.get('error', 'Camera access failed')}
         
@@ -317,11 +311,11 @@ async def check_face_angle_tool():
         return {"status": "error", "error": f"Face angle check failed: {str(e)}"}
 
 
-def safely_capture_frame():
+def _default_safely_capture_frame():
     """Safely capture a frame with better error handling."""
     try:
         for attempt in range(3):
-            cap = cv2.VideoCapture(1)
+            cap = cv2.VideoCapture(2)
             if cap.isOpened():
                 ret, frame = cap.read()
                 cap.release()
@@ -346,6 +340,15 @@ def safely_capture_frame():
         except:
             pass
 
+async def safely_capture_frame():
+    return await _capture_frame_impl()
+
+_capture_frame_impl = _default_safely_capture_frame
+
+def set_capture_implementation(func):
+    global _capture_frame_impl
+    _capture_frame_impl = func
+
 async def calibrate_posture_tool():
     """Tool for calibrating the user's correct posture with improved camera handling."""
     global calibrated_features
@@ -356,7 +359,7 @@ async def calibrate_posture_tool():
     for i in range(5):
         print(f"Capturing pose {i+1}/5...")
         
-        capture_result = await asyncio.to_thread(safely_capture_frame)
+        capture_result = await webrtc_capture_frame()
         if capture_result["status"] != "success":
             print(f"❌ Camera error: {capture_result.get('error', 'Unknown error')}")
             if i > 0 and features_list:

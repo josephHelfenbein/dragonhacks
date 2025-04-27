@@ -72,15 +72,6 @@ export default function Dashboard() {
       }
     });
     
-    const featCh = pusher.subscribe('my-channel');
-    featCh.bind('my-event', (data: any) => {
-      const msg = typeof data === 'object' && data.message ? data.message : data;
-      if (msg === 'drink water') {
-        toast.info('Hydration Reminder', { description: 'Time to drink water!', duration: 5000 });
-      } else if (msg === 'bad posture') {
-        toast.warning('Posture Check', { description: 'Sit up straight!', duration: 5000 });
-      }
-    });
     const pendingCandidates: RTCIceCandidateInit[] = [];
     
     signallingChannel.current = pusher.subscribe('webrtc-signaling');
@@ -116,7 +107,7 @@ export default function Dashboard() {
     pusher.connection.bind('error', (err: any) => console.error('Pusher error', err));
     
     return () => {
-      [logsChan, featCh, signallingChannel.current].forEach(c => {
+      [logsChan, badPostureCh, phoneAlertCh, signallingChannel.current].forEach(c => {
         c?.unbind_all();
         c?.unsubscribe();
       });

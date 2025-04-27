@@ -6,7 +6,7 @@ import time
 import logging
 import asyncio
 import json
-
+import cv2
 import av
 av.logging.set_level(av.logging.ERROR)
 
@@ -43,6 +43,10 @@ tcs = set()
 
 webrtc_ready = threading.Event()
 
+os.makedirs("frames", exist_ok=True)
+latest_frame_path = os.path.join("frames", "latest_frame.jpg")
+webrtc_status_path = os.path.join("frames", "webrtc_ready")
+
 async def handle_offer(data):
     offer = json.loads(data)
     pc = RTCPeerConnection()
@@ -53,9 +57,15 @@ async def handle_offer(data):
         if track.kind == "video":
             async def recv_frames():
                 webrtc_ready.set()
+                with open(webrtc_status_path, "w") as f:
+                    f.write("ready")
+                    
                 while True:
                     frame = await track.recv()
                     img = frame.to_ndarray(format="bgr24")
+                    
+                    cv2.imwrite(latest_frame_path, img)
+                    
                     await frame_queue.put(img)
             asyncio.run_coroutine_threadsafe(recv_frames(), loop)
 
@@ -91,15 +101,26 @@ ws_pusher.connection.bind('pusher:connection_established', on_connect)
 ws_pusher.connect()
 print("🚀 Pusher client initialized, awaiting control & signaling...")
 
-import posture_tools
+frames_received = False
+
 async def webrtc_capture_frame():
     try:
-        frame = await asyncio.wait_for(frame_queue.get(), timeout=5.0)
-        return {"status": "success", "frame": frame}
-    except asyncio.TimeoutError:
-        return {"status": "error", "error": "No WebRTC frame in time"}
-posture_tools.safely_capture_frame = webrtc_capture_frame
-
+        # Check if WebRTC is ready by looking for the signal file
+        if not os.path.exists(webrtc_status_path):
+            return {"status": "error", "error": "WebRTC connection not established yet"}
+            
+        # Try to get frame from the image file
+        if os.path.exists(latest_frame_path):
+            # Run CV2 image reading in a thread pool to prevent blocking
+            frame = await asyncio.to_thread(cv2.imread, latest_frame_path)
+            if frame is None:
+                return {"status": "error", "error": "Failed to read frame from file"}
+            return {"status": "success", "frame": frame}
+        else:
+            return {"status": "error", "error": "No frames available yet"}
+    except Exception as e:
+        return {"status": "error", "error": f"WebRTC error: {str(e)}"}
+    
 agent_thread = None
 
 def start_agent(data=None):
