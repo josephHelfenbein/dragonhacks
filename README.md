@@ -31,6 +31,11 @@ Hours of exam prep left us stiff-necked and scatter-brained. Posture gadgets fel
 ## 🧰 Tech Stack & Tools  
 [![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)](https://www.python.org)  [![MediaPipe](https://img.shields.io/badge/MediaPipe-F76710?logo=google&logoColor=white)](https://developers.google.com/mediapipe)   [![LangGraph](https://img.shields.io/badge/LangGraph-FFCC00?logo=langchain&logoColor=black)](https://python.langchain.com)  [![Go](https://img.shields.io/badge/Go-00ADD8?logo=go&logoColor=white)](https://go.dev)  [![Pusher](https://img.shields.io/badge/Pusher-664CC2?logo=pusher&logoColor=white)](https://pusher.com)  [![WebRTC](https://img.shields.io/badge/WebRTC-008000?logo=webrtc&logoColor=white)](https://webrtc.org)  [![Next.js](https://img.shields.io/badge/Next.js-000?logo=nextdotjs&logoColor=white)](https://nextjs.org)  [![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)](https://react.dev)  [![TypeScript](https://img.shields.io/badge/Tailwind-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)  [![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-FF6363?logo=react&logoColor=white)](https://ui.shadcn.com) [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 
+---
+
+## How to Run
+
+First, have the correct API keys in the global .env and in the /agent .env. Then, go to the agent folder and run `pip install -r requirements.txt` and `python server.py`. In a separate terminal, run `vercel dev` on the root folder and go to `http://localhost:3000/`.
 
 ---
 
